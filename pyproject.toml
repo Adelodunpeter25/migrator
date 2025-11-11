@@ -1,5 +1,5 @@
 [project]
-name = "migrator"
+name = "migrator-cli"
 version = "0.1.0"
 description = "Universal migration CLI for Python apps"
 readme = "README.md"

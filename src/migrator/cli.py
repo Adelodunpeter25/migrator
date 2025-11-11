@@ -8,6 +8,7 @@ from migrator.core.alembic_backend import AlembicBackend
 from migrator.core.config import MigratorConfig
 from migrator.core.detector import ModelDetector
 from migrator.core.logger import error, info, success
+from migrator.utils.validators import sanitize_message, validate_database_url
 
 app = typer.Typer(help="🧩 Migrator - Universal Migration CLI")
 console = Console()
@@ -55,6 +56,16 @@ def makemigrations(
     """Create new migration"""
     try:
         config = MigratorConfig.load()
+
+        if not validate_database_url(config.database_url):
+            error("Invalid database URL format")
+            raise typer.Exit(1)
+
+        message = sanitize_message(message)
+        if not message:
+            error("Migration message cannot be empty")
+            raise typer.Exit(1)
+
         backend = AlembicBackend(config)
 
         info(f"Creating migration: {message}")

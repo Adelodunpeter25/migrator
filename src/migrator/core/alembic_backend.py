@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 
 from migrator.core.base import MigrationBackend
 from migrator.core.config import MigratorConfig
+from migrator.utils.file_utils import read_template, write_file
 
 
 class AlembicBackend(MigrationBackend):
@@ -38,9 +39,8 @@ class AlembicBackend(MigrationBackend):
 
     def _create_env_py(self, directory: Path) -> None:
         """Create customized env.py"""
-        template_path = Path(__file__).parent.parent / "templates" / "env.py.mako"
-        with open(template_path) as f:
-            template = Template(f.read())
+        template_content = read_template("env.py.mako")
+        template = Template(template_content)
 
         if self.config.base_import_path:
             parts = self.config.base_import_path.rsplit(".", 1)
@@ -53,21 +53,12 @@ class AlembicBackend(MigrationBackend):
             target_metadata = "None"
 
         content = template.render(imports=imports, target_metadata=target_metadata)
-
-        env_path = directory / "env.py"
-        with open(env_path, "w") as f:
-            f.write(content)
+        write_file(directory / "env.py", content)
 
     def _create_script_mako(self, directory: Path) -> None:
         """Copy script.py.mako template"""
-        template_path = Path(__file__).parent.parent / "templates" / "script.py.mako"
-        dest_path = directory / "script.py.mako"
-
-        with open(template_path) as f:
-            content = f.read()
-
-        with open(dest_path, "w") as f:
-            f.write(content)
+        content = read_template("script.py.mako")
+        write_file(directory / "script.py.mako", content)
 
     def _create_alembic_ini(self, directory: Path) -> None:
         """Create alembic.ini file"""

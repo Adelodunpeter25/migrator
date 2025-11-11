@@ -18,6 +18,8 @@ def temp_dir():
 @pytest.fixture
 def mock_env(monkeypatch):
     """Mock environment variables"""
+
     def _set_env(key, value):
         monkeypatch.setenv(key, value)
+
     return _set_env

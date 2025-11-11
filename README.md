@@ -41,6 +41,8 @@ curl -sSL https://raw.githubusercontent.com/Adelodunpeter25/migrator/main/uninst
 
 ## 🚀 Quick Start
 
+> **Note:** If you have an existing database with tables, see [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) first.
+
 ### 1. Set up your database URL
 
 Create a `.env` file:
@@ -106,7 +108,13 @@ Apply pending migrations.
 ```bash
 migrator migrate
 migrator migrate --revision abc123  # Migrate to specific revision
+migrator migrate --dry-run  # Preview (shows note about --sql flag)
 ```
+
+**Note:** If you have an existing database with tables, migrator will detect them and offer to:
+1. Mark database as migrated (stamp) - Recommended
+2. Continue anyway (may cause conflicts)
+3. Cancel
 
 ### `migrator downgrade`
 
@@ -132,6 +140,23 @@ Show current database revision.
 
 ```bash
 migrator current
+```
+
+### `migrator stamp`
+
+Mark database as migrated without running migrations (useful for existing databases).
+
+```bash
+migrator stamp head  # Mark as latest
+migrator stamp abc123  # Mark to specific revision
+```
+
+### `migrator status`
+
+Show migration status and pending migrations.
+
+```bash
+migrator status
 ```
 
 ## ⚙️ Configuration

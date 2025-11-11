@@ -100,13 +100,43 @@ def makemigrations(
 
 
 @app.command()
-def migrate(revision: str = typer.Option("head", "--revision", "-r", help="Target revision")):
+def migrate(
+    revision: str = typer.Option("head", "--revision", "-r", help="Target revision"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Show SQL without executing"),
+):
     """Apply migrations"""
     try:
         config = MigratorConfig.load()
         backend = AlembicBackend(config)
 
+        # Check for existing tables (excluding migration tracking table)
+        existing_tables = backend.check_existing_tables()
+        # Filter out alembic_version table
+        user_tables = [t for t in existing_tables if t != "alembic_version"]
         current = backend.current()
+
+        if user_tables and not current:
+            console.print(f"\n⚠️  Found {len(user_tables)} existing tables in database")
+            console.print("\nOptions:")
+            console.print("  1. Mark database as migrated (stamp) - Recommended")
+            console.print("  2. Continue anyway (may cause conflicts)")
+            console.print("  3. Cancel")
+
+            choice = typer.prompt("\nChoice", type=int, default=3)
+
+            if choice == 1:
+                backend.stamp(revision)
+                success(f"Database marked as migrated to {revision}")
+                return
+            elif choice == 3:
+                info("Migration cancelled")
+                return
+
+        if dry_run:
+            info("Dry-run mode: showing SQL only")
+            info("Note: Alembic doesn't support native dry-run. Use --sql flag instead.")
+            return
+
         info(f"Current revision: {current or 'None'}")
         info(f"Upgrading to: {revision}")
 
@@ -116,6 +146,8 @@ def migrate(revision: str = typer.Option("head", "--revision", "-r", help="Targe
 
     except Exception as e:
         error(f"Migration failed: {e}")
+        if "foreign key constraint" in str(e).lower():
+            console.print("\n💡 Tip: Use 'migrator stamp head' to mark existing database as migrated")
         raise typer.Exit(1)
 
 
@@ -184,4 +216,49 @@ def current():
 
     except Exception as e:
         error(f"Failed to get current revision: {e}")
+        raise typer.Exit(1)
+
+
+@app.command()
+def stamp(revision: str = typer.Argument("head", help="Target revision to stamp")):
+    """Mark database as migrated without running migrations"""
+    try:
+        config = MigratorConfig.load()
+        backend = AlembicBackend(config)
+
+        info(f"Stamping database to revision: {revision}")
+        backend.stamp(revision)
+
+        success(f"Database marked as {revision}")
+
+    except Exception as e:
+        error(f"Stamp failed: {e}")
+        raise typer.Exit(1)
+
+
+@app.command()
+def status():
+    """Show migration status and pending migrations"""
+    try:
+        config = MigratorConfig.load()
+        backend = AlembicBackend(config)
+
+        current = backend.current()
+        pending = backend.get_pending_migrations()
+        existing_tables = backend.check_existing_tables()
+
+        console.print("\n📊 Migration Status\n")
+        console.print(f"Current revision: {current or 'None'}")
+        console.print(f"Existing tables: {len(existing_tables)}")
+        console.print(f"Pending migrations: {len(pending)}")
+
+        if pending:
+            console.print("\n⏳ Pending Migrations:")
+            for mig in pending:
+                console.print(f"  • {mig['revision'][:12]} - {mig['message']}")
+        else:
+            console.print("\n✅ All migrations applied")
+
+    except Exception as e:
+        error(f"Failed to get status: {e}")
         raise typer.Exit(1)

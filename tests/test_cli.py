@@ -52,3 +52,17 @@ def test_current_help():
     result = runner.invoke(app, ["current", "--help"])
     assert result.exit_code == 0
     assert "Show current revision" in result.stdout
+
+
+def test_stamp_help():
+    """Test stamp command help"""
+    result = runner.invoke(app, ["stamp", "--help"])
+    assert result.exit_code == 0
+    assert "Mark database as migrated" in result.stdout
+
+
+def test_status_help():
+    """Test status command help"""
+    result = runner.invoke(app, ["status", "--help"])
+    assert result.exit_code == 0
+    assert "Show migration status" in result.stdout

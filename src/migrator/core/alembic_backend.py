@@ -6,7 +6,7 @@ from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
 from mako.template import Template
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 
 from migrator.core.base import MigrationBackend
 from migrator.core.config import MigratorConfig
@@ -152,3 +152,32 @@ datefmt = %H:%M:%S
             current_rev = context.get_current_revision()
 
         return current_rev
+
+    def stamp(self, revision: str = "head") -> None:
+        """Mark database as migrated without running migrations"""
+        command.stamp(self.alembic_cfg, revision)
+
+    def check_existing_tables(self) -> List[str]:
+        """Check for existing tables in database"""
+        engine = create_engine(self.config.database_url)
+        inspector = inspect(engine)
+        return inspector.get_table_names()
+
+    def get_pending_migrations(self) -> List[dict]:
+        """Get list of pending migrations"""
+        script_dir = ScriptDirectory.from_config(self.alembic_cfg)
+        current = self.current()
+        pending = []
+
+        for revision in script_dir.walk_revisions():
+            if current is None or revision.revision != current:
+                pending.append(
+                    {
+                        "revision": revision.revision,
+                        "message": revision.doc or "No message",
+                    }
+                )
+            else:
+                break
+
+        return list(reversed(pending))

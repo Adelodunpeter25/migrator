@@ -35,3 +35,18 @@ class MigrationBackend(ABC):
     def current(self) -> Optional[str]:
         """Get current revision"""
         pass
+
+    @abstractmethod
+    def stamp(self, revision: str = "head") -> None:
+        """Mark database as migrated without running migrations"""
+        pass
+
+    @abstractmethod
+    def check_existing_tables(self) -> List[str]:
+        """Check for existing tables in database"""
+        pass
+
+    @abstractmethod
+    def get_pending_migrations(self) -> List[dict]:
+        """Get list of pending migrations"""
+        pass

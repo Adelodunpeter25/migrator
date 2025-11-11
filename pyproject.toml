@@ -1,15 +1,36 @@
 [project]
 name = "migrator-cli"
-version = "0.1.0"
+version = "0.2.0"
 description = "Universal migration CLI for Python apps"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-    { name = "Peter Adelodun" }
+    { name = "Peter Adelodun", email = "adelodunpeter24@gmail.com" }
 ]
+license = { text = "MIT" }
+keywords = ["migration", "database", "alembic", "sqlalchemy", "cli", "orm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://github.com/Adelodunpeter25/migrator"
+Repository = "https://github.com/Adelodunpeter25/migrator"
+Issues = "https://github.com/Adelodunpeter25/migrator/issues"
+Changelog = "https://github.com/Adelodunpeter25/migrator/blob/main/CHANGELOG.md"
 dependencies = [
     "alembic>=1.17.1",
     "mako>=1.3.10",
+    "psycopg2-binary>=2.9.0",
     "pydantic>=2.12.4",
     "python-dotenv>=1.2.1",
     "pyyaml>=6.0",
@@ -24,6 +45,9 @@ migrator = "migrator.cli:app"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/migrator"]

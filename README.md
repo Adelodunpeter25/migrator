@@ -1,18 +1,17 @@
-# 🧩 Migrator
+# Migrator
 
 **The Universal Migration CLI for Python Apps**
 
-A lightweight, framework-agnostic database migration tool for Python projects using SQLAlchemy. Migrator automates what Alembic requires developers to set up manually — making migrations as simple as Django's `makemigrations` and `migrate`, but flexible enough for any project.
+A lightweight, framework-agnostic database migration tool for Python projects using SQLAlchemy. 
+Migrator automates what Alembic requires developers to set up manually — making migrations as simple as Django's `makemigrations` and `migrate`, but flexible enough for any project.
 
 ## ✨ Features
 
-- 🟢 **Zero boilerplate** — one command to init and start migrating
-- ⚙️ **Auto-detect models** — finds SQLAlchemy Base classes automatically
-- 🧠 **Smart config** — no need to manually edit alembic.ini or env.py
-- 🧰 **Framework agnostic** — works with FastAPI, Flask, or standalone SQLAlchemy
-- 🐍 **Pythonic CLI** — clean, readable, extensible commands
-- 🪶 **Lightweight** — minimal dependencies
-- 🎨 **Beautiful output** — Rich terminal UI with colors and emojis
+- **Zero boilerplate** — one command to init and start migrating
+- **Auto-detect models** — finds SQLAlchemy Base classes automatically
+- **Smart config** — no need to manually edit alembic.ini or env.py
+- **Framework agnostic** — works with FastAPI, Flask, or standalone SQLAlchemy
+- **Pythonic CLI** — clean, readable, extensible commands
 
 ## 📦 Installation
 
@@ -127,17 +126,6 @@ Show migration history.
 migrator history
 ```
 
-Output:
-
-```
-┏━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┓
-┃ Revision    ┃ Message                ┃ Status   ┃
-┡━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━┩
-│ abc123def456│ create user table      │ ✅ applied│
-│ def789ghi012│ add email to users     │ ⏳ pending│
-└─────────────┴────────────────────────┴──────────┘
-```
-
 ### `migrator current`
 
 Show current database revision.
@@ -205,10 +193,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built on top of [Alembic](https://alembic.sqlalchemy.org/)
-- Inspired by Django's migration system
-- CLI powered by [Typer](https://typer.tiangolo.com/)
-- Beautiful output by [Rich](https://rich.readthedocs.io/)

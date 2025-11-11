@@ -16,14 +16,28 @@ A lightweight, framework-agnostic database migration tool for Python projects us
 
 ## 📦 Installation
 
+### Quick Install (Recommended)
+
 ```bash
-pip install migrator
+curl -sSL https://raw.githubusercontent.com/Adelodunpeter25/migrator/main/install.sh | bash
 ```
 
-Or with uv:
+### Using pip
 
 ```bash
-uv add migrator
+pip install git+https://github.com/Adelodunpeter25/migrator.git
+```
+
+### Using uv
+
+```bash
+uv add git+https://github.com/Adelodunpeter25/migrator.git
+```
+
+### Uninstall
+
+```bash
+curl -sSL https://raw.githubusercontent.com/Adelodunpeter25/migrator/main/uninstall.sh | bash
 ```
 
 ## 🚀 Quick Start
@@ -183,17 +197,6 @@ Migrator wraps Alembic's powerful migration engine with a simpler interface:
 - Customizes templates for auto-import
 - Provides Django-style command names
 - Adds beautiful terminal output
-
-## 🛠️ Technology Stack
-
-| Component   | Library        | Purpose                    |
-|-------------|----------------|----------------------------|
-| CLI         | Typer          | Command-line interface     |
-| ORM         | SQLAlchemy     | Database models            |
-| Migrations  | Alembic        | Migration engine           |
-| Config      | python-dotenv  | Environment variables      |
-| Output      | Rich           | Terminal UI                |
-| Validation  | Pydantic       | Configuration validation   |
 
 ## 🤝 Contributing
 

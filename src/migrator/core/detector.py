@@ -45,15 +45,23 @@ class ModelDetector:
                 continue
 
             try:
-                spec = importlib.util.spec_from_file_location("temp_module", py_file)
+                module_name = py_file.stem
+                spec = importlib.util.spec_from_file_location(module_name, py_file)
                 if not spec or not spec.loader:
                     continue
 
+                sys.path.insert(0, str(py_file.parent))
                 module = importlib.util.module_from_spec(spec)
+                sys.modules[module_name] = module
                 spec.loader.exec_module(module)
 
                 for name, obj in inspect.getmembers(module):
-                    if hasattr(obj, "metadata") and hasattr(obj, "registry"):
+                    if (
+                        name == "Base"
+                        and hasattr(obj, "metadata")
+                        and hasattr(obj, "registry")
+                        and not obj.__module__.startswith("sqlalchemy")
+                    ):
                         return obj
             except Exception:
                 continue

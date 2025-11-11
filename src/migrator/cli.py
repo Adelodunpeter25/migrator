@@ -29,7 +29,28 @@ def init(
             error("Could not find SQLAlchemy Base class")
             raise typer.Exit(1)
 
-        config.base_import_path = f"{base.__module__}.{base.__name__}"
+        # Get the module where Base was actually defined (not sqlalchemy)
+        import inspect
+
+        base_module = inspect.getmodule(base)
+        if base_module and not base_module.__name__.startswith("sqlalchemy"):
+            config.base_import_path = f"{base_module.__name__}.Base"
+        else:
+            # Fallback: scan for the file that has Base
+            for py_file in Path.cwd().rglob("*.py"):
+                if "venv" in str(py_file) or "site-packages" in str(py_file):
+                    continue
+                try:
+                    content = py_file.read_text()
+                    if (
+                        "Base = declarative_base()" in content
+                        or "Base=declarative_base()" in content
+                    ):
+                        module_name = py_file.stem
+                        config.base_import_path = f"{module_name}.Base"
+                        break
+                except Exception:
+                    continue
 
         info(f"Initializing migrations in {directory}...")
         backend = AlembicBackend(config)

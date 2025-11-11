@@ -1,4 +1,3 @@
-
 import pytest
 
 from migrator.utils.file_utils import (

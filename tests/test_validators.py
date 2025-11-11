@@ -1,4 +1,3 @@
-
 from migrator.utils.validators import (
     sanitize_message,
     validate_database_url,

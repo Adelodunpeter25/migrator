@@ -1,5 +1,3 @@
-
-
 from migrator.core.detector import ModelDetector
 
 

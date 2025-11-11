@@ -1,4 +1,3 @@
-
 import pytest
 
 from migrator.utils.config_loader import ConfigLoader

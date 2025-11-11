@@ -15,28 +15,15 @@ Migrator automates what Alembic requires developers to set up manually — makin
 
 ## 📦 Installation
 
-### Quick Install (Recommended)
-
 ```bash
+# Quick install
 curl -sSL https://raw.githubusercontent.com/Adelodunpeter25/migrator/main/install.sh | bash
-```
 
-### Using pip
+# Or using pip
+pip install migrator-cli
 
-```bash
-pip install git+https://github.com/Adelodunpeter25/migrator.git
-```
-
-### Using uv
-
-```bash
-uv add git+https://github.com/Adelodunpeter25/migrator.git
-```
-
-### Uninstall
-
-```bash
-curl -sSL https://raw.githubusercontent.com/Adelodunpeter25/migrator/main/uninstall.sh | bash
+# Or using uv
+uv add migrator-cli
 ```
 
 ## 🚀 Quick Start
@@ -59,16 +46,6 @@ Or use `settings.py`, `config.py`, `config.yaml`, or `config.toml`.
 migrator init
 ```
 
-This creates:
-
-```
-migrations/
-├── versions/
-├── env.py
-├── script.py.mako
-└── alembic.ini
-```
-
 ### 3. Create your first migration
 
 ```bash
@@ -83,138 +60,61 @@ migrator migrate
 
 ## 📖 Commands
 
-### `migrator init`
-
-Initialize migration environment in your project.
-
 ```bash
+# Initialize migration environment
 migrator init
-migrator init --dir custom_migrations
-```
 
-### `migrator makemigrations`
-
-Create a new migration with auto-detection.
-
-```bash
+# Create new migration
 migrator makemigrations "add email to users"
-migrator makemigrations "initial" --manual  # Create empty migration
-```
 
-### `migrator migrate`
-
-Apply pending migrations.
-
-```bash
+# Apply migrations
 migrator migrate
-migrator migrate --revision abc123  # Migrate to specific revision
-migrator migrate --dry-run  # Preview (shows note about --sql flag)
-```
 
-**Note:** If you have an existing database with tables, migrator will detect them and offer to:
-1. Mark database as migrated (stamp) - Recommended
-2. Continue anyway (may cause conflicts)
-3. Cancel
+# Rollback migrations
+migrator downgrade
 
-### `migrator downgrade`
-
-Rollback migrations.
-
-```bash
-migrator downgrade  # Rollback one migration
-migrator downgrade --revision abc123  # Rollback to specific revision
-migrator downgrade --revision base  # Rollback all migrations
-```
-
-### `migrator history`
-
-Show migration history.
-
-```bash
+# Show migration history
 migrator history
-```
 
-### `migrator current`
-
-Show current database revision.
-
-```bash
+# Show current revision
 migrator current
-```
 
-### `migrator stamp`
+# Mark database as migrated (for existing databases)
+migrator stamp head
 
-Mark database as migrated without running migrations (useful for existing databases).
-
-```bash
-migrator stamp head  # Mark as latest
-migrator stamp abc123  # Mark to specific revision
-```
-
-### `migrator status`
-
-Show migration status and pending migrations.
-
-```bash
+# Show migration status
 migrator status
 ```
 
 ## ⚙️ Configuration
 
-Migrator automatically detects your database URL from multiple sources (in order):
+Migrator auto-detects your database URL from `.env`, environment variables, `settings.py`, `config.py`, `config.yaml`, or `config.toml`.
 
-1. `.env` file (`DATABASE_URL` or `SQLALCHEMY_DATABASE_URI`)
-2. Environment variables
-3. `settings.py` or `config.py`
-4. `config.yaml` or `config.toml`
-
-### Example configurations
-
-**.env**
 ```bash
+# .env file
 DATABASE_URL=postgresql://user:password@localhost:5432/dbname
 ```
 
-**settings.py**
-```python
-DATABASE_URL = "postgresql://user:password@localhost:5432/dbname"
+## 🔧 Troubleshooting
+
+**Existing database with tables?**
+```bash
+migrator init
+migrator makemigrations "initial"
+migrator stamp head  # Don't run migrate!
 ```
+See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for detailed instructions.
 
-**config.yaml**
-```yaml
-database:
-  url: postgresql://user:password@localhost:5432/dbname
-```
+**Foreign key constraint errors?**  
+Use `migrator stamp head` to mark existing database as migrated.
 
-**config.toml**
-```toml
-[database]
-url = "postgresql://user:password@localhost:5432/dbname"
-```
-
-## 🔧 How It Works
-
-### Auto-Detection
-
-Migrator automatically finds your SQLAlchemy Base class by:
-
-1. Checking common import paths (`app.models`, `models`, `database`, etc.)
-2. Scanning your project files for declarative base classes
-3. Injecting the correct import into Alembic's `env.py`
-
-### Alembic Integration
-
-Migrator wraps Alembic's powerful migration engine with a simpler interface:
-
-- Uses `alembic.command` API internally
-- Customizes templates for auto-import
-- Provides Django-style command names
-- Adds beautiful terminal output
+**Missing database driver?**  
+PostgreSQL: `psycopg2-binary` is included. For others: `pip install pymysql` (MySQL) or `pip install cx_oracle` (Oracle).
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! Submit a Pull Request.
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file.

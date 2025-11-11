@@ -90,27 +90,6 @@ migrator status
 
 Migrator auto-detects your database URL from `.env`, environment variables, `settings.py`, `config.py`, `config.yaml`, or `config.toml`.
 
-```bash
-# .env file
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-```
-
-## 🔧 Troubleshooting
-
-**Existing database with tables?**
-```bash
-migrator init
-migrator makemigrations "initial"
-migrator stamp head  # Don't run migrate!
-```
-See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for detailed instructions.
-
-**Foreign key constraint errors?**  
-Use `migrator stamp head` to mark existing database as migrated.
-
-**Missing database driver?**  
-PostgreSQL: `psycopg2-binary` is included. For others: `pip install pymysql` (MySQL) or `pip install cx_oracle` (Oracle).
-
 ## 🤝 Contributing
 
 Contributions welcome! Submit a Pull Request.

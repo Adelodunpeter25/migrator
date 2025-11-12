@@ -86,10 +86,6 @@ migrator stamp head
 migrator status
 ```
 
-## ⚙️ Configuration
-
-Migrator auto-detects your database URL from `.env`, environment variables, `settings.py`, `config.py`, `config.yaml`, or `config.toml`.
-
 ## 🤝 Contributing
 
 Contributions welcome! Submit a Pull Request.

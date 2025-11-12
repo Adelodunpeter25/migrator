@@ -3,7 +3,7 @@
 **The Universal Migration CLI for Python Apps**
 
 A lightweight, framework-agnostic database migration tool for Python projects using SQLAlchemy. 
-Migrator automates what Alembic requires developers to set up manually — making migrations as simple as Django's `makemigrations` and `migrate`, but flexible enough for any project.
+Migrator automates what Alembic requires developers to set up manually — making migrations as simple as Django's `makemigrations` and `migrate`, but flexible enough for Python any project.
 
 ## ✨ Features
 

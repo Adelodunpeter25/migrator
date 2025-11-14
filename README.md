@@ -86,6 +86,49 @@ migrator stamp head
 migrator status
 ```
 
+## 🏗️ Advanced Usage
+
+### Nested Project Structures
+
+```bash
+migrator init --base app.core.database:Base
+migrator makemigrations "initial" --base app.core.database:Base
+```
+
+### Async SQLAlchemy
+
+```bash
+# Your .env
+DATABASE_URL=postgresql+asyncpg://user:pass@localhost/db
+# Migrator auto-converts to: postgresql://user:pass@localhost/db
+```
+
+### Custom Config
+
+```bash
+migrator init --config backend/settings.py
+```
+
+### Verbose Mode
+
+```bash
+migrator init --verbose
+```
+
+## 🔧 Troubleshooting
+
+**Base not found?** Use `--base` flag:
+```bash
+migrator init --base app.core.database:Base
+```
+
+**Existing database?** Use `stamp`:
+```bash
+migrator stamp head
+```
+
+**Async SQLAlchemy?** See [ASYNC_GUIDE.md](ASYNC_GUIDE.md)
+
 ## 🤝 Contributing
 
 Contributions welcome! Submit a Pull Request.

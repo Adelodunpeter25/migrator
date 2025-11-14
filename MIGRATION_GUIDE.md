@@ -113,7 +113,22 @@ migrator stamp head
 # This marks the database as migrated without running migrations
 ```
 
-## Scenario 4: Partial Migration
+## Scenario 4: Nested Project Structure
+
+If your Base is in a nested module like `app/core/database.py`:
+
+```bash
+# Initialize with explicit Base path
+migrator init --base app.core.database:Base
+
+# Create migrations
+migrator makemigrations "initial" --base app.core.database:Base
+
+# Or use verbose mode to see detection
+migrator init --base app.core.database:Base --verbose
+```
+
+## Scenario 5: Partial Migration
 
 If some tables exist but not all:
 

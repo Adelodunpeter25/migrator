@@ -16,18 +16,52 @@ console = Console()
 
 @app.command()
 def init(
-    directory: Path = typer.Option(Path("migrations"), "--dir", "-d", help="Migration directory")
+    directory: Path = typer.Option(Path("migrations"), "--dir", "-d", help="Migration directory"),
+    base_path: str = typer.Option(None, "--base", "-b", help="Base class path (e.g. app.core.database:Base)"),
+    config_path: Path = typer.Option(None, "--config", "-c", help="Config file path"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Show detailed detection process"),
 ):
     """Initialize migration environment"""
     try:
+        if verbose:
+            info("Verbose mode enabled")
+        
         info("Detecting project configuration...")
-        config = MigratorConfig.load(migrations_dir=directory)
+        
+        if verbose:
+            from migrator.utils.config_loader import ConfigLoader
+            env_file = ConfigLoader._find_env_file()
+            if env_file:
+                info(f"Found .env at: {env_file}")
+            else:
+                info("No .env file found")
+        
+        config = MigratorConfig.load(migrations_dir=directory, config_path=config_path)
+        
+        if verbose:
+            info(f"Database URL: {config.database_url[:30]}...")
 
         info("Finding SQLAlchemy Base...")
-        base = ModelDetector.find_base()
+        base = ModelDetector.find_base(explicit_path=base_path)
+        
         if not base:
             error("Could not find SQLAlchemy Base class")
+            
+            searched = ModelDetector.get_searched_paths()
+            if searched:
+                info(f"Searched in: {', '.join(searched[:5])}")
+                if len(searched) > 5:
+                    info(f"... and {len(searched) - 5} more locations")
+            
+            console.print("\n💡 Hints:")
+            console.print("  1. Use --base flag: migrator init --base app.core.database:Base")
+            console.print("  2. Ensure Base = declarative_base() exists in your code")
+            console.print("  3. Check that your models are importable")
+            
             raise typer.Exit(1)
+        
+        if verbose:
+            info(f"Found Base in: {base.__module__}")
 
         # Get the module where Base was actually defined (not sqlalchemy)
         import inspect
@@ -73,10 +107,18 @@ def init(
 def makemigrations(
     message: str = typer.Argument(..., help="Migration description"),
     autogenerate: bool = typer.Option(True, "--auto/--manual", help="Auto-generate migration"),
+    base_path: str = typer.Option(None, "--base", "-b", help="Base class path"),
 ):
     """Create new migration"""
     try:
         config = MigratorConfig.load()
+        
+        if autogenerate and not config.base_import_path:
+            base = ModelDetector.find_base(explicit_path=base_path)
+            if not base:
+                error("Could not find SQLAlchemy Base class")
+                info("Hint: Use --base flag or run 'migrator init' first")
+                raise typer.Exit(1)
 
         if not validate_database_url(config.database_url):
             error("Invalid database URL format")

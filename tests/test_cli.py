@@ -17,6 +17,9 @@ def test_init_help():
     result = runner.invoke(app, ["init", "--help"])
     assert result.exit_code == 0
     assert "Initialize migration environment" in result.stdout
+    assert "--base" in result.stdout
+    assert "--config" in result.stdout
+    assert "--verbose" in result.stdout
 
 
 def test_makemigrations_help():
@@ -24,6 +27,7 @@ def test_makemigrations_help():
     result = runner.invoke(app, ["makemigrations", "--help"])
     assert result.exit_code == 0
     assert "Create new migration" in result.stdout
+    assert "--base" in result.stdout
 
 
 def test_migrate_help():

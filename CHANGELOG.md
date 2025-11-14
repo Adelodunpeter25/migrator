@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-11-14
+
+### Added
+- `--base` flag to specify Base class location explicitly (e.g., `app.core.database:Base`)
+- `--config` flag to specify config file path
+- `--verbose` flag for detailed detection output
+- Automatic async URL conversion (asyncpg, aiomysql, aiosqlite)
+- Multi-directory .env file search (searches up 5 parent directories)
+- Support for nested project structures (app.core.database)
+- Expanded common model paths for better auto-detection (12 new paths)
+- Search path tracking for better error messages
+- ASYNC_GUIDE.md for async SQLAlchemy projects
+
+### Fixed
+- .env file not found in parent directories
+- Base class detection in nested structures
+- Async SQLAlchemy URL compatibility
+- Poor error messages - now shows searched paths and helpful hints
+
+### Documentation
+- Added advanced usage section to README
+- Created ASYNC_GUIDE.md
+- Updated MIGRATION_GUIDE.md with nested structure examples
+- Added troubleshooting for common issues
+
 ## [0.2.0] - 2025-11-11
 
 ### Added

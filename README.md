@@ -127,8 +127,6 @@ migrator init --base app.core.database:Base
 migrator stamp head
 ```
 
-**Async SQLAlchemy?** See [ASYNC_GUIDE.md](ASYNC_GUIDE.md)
-
 ## 🤝 Contributing
 
 Contributions welcome! Submit a Pull Request.

@@ -13,7 +13,6 @@ All notable changes to this project will be documented in this file.
 - Support for nested project structures (app.core.database)
 - Expanded common model paths for better auto-detection (12 new paths)
 - Search path tracking for better error messages
-- ASYNC_GUIDE.md for async SQLAlchemy projects
 
 ### Fixed
 - .env file not found in parent directories
@@ -23,7 +22,6 @@ All notable changes to this project will be documented in this file.
 
 ### Documentation
 - Added advanced usage section to README
-- Created ASYNC_GUIDE.md
 - Updated MIGRATION_GUIDE.md with nested structure examples
 - Added troubleshooting for common issues
 

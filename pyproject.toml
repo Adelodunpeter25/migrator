@@ -56,10 +56,10 @@ packages = ["src/migrator"]
 
 [dependency-groups]
 dev = [
-    "black>=25.11.0",
-    "pytest>=9.0.0",
-    "pytest-cov>=7.0.0",
-    "ruff>=0.14.4",
+    "black>=23.0.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
 ]
 
 [tool.black]

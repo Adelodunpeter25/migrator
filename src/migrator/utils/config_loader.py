@@ -1,3 +1,4 @@
+import importlib.util
 import os
 import sys
 from pathlib import Path
@@ -11,9 +12,76 @@ class ConfigLoader:
     """Load database URL from multiple sources"""
 
     @staticmethod
-    def load_database_url() -> str:
+    def _find_env_file() -> Optional[Path]:
+        """Search for .env file in current and parent directories"""
+        current = Path.cwd()
+        for _ in range(5):
+            env_file = current / ".env"
+            if env_file.exists():
+                return env_file
+            if current.parent == current:
+                break
+            current = current.parent
+        return None
+
+    @staticmethod
+    def _normalize_database_url(url: str) -> str:
+        """Convert async database URLs to sync for Alembic compatibility"""
+        async_drivers = {
+            "+asyncpg": "",
+            "+aiomysql": "+pymysql",
+            "+aiosqlite": "",
+        }
+        
+        for async_driver, sync_driver in async_drivers.items():
+            if async_driver in url:
+                from migrator.core.logger import warning
+                warning(f"Detected async driver: {async_driver}")
+                warning(f"Converting to sync for Alembic: {sync_driver or 'default'}")
+                url = url.replace(async_driver, sync_driver)
+                break
+        
+        return url
+
+    @staticmethod
+    def _try_explicit_config(config_path: Path) -> Optional[str]:
+        """Load from explicitly specified config file"""
+        if not config_path.exists():
+            return None
+        
+        if config_path.suffix == ".py":
+            spec = importlib.util.spec_from_file_location("config", config_path)
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                return getattr(module, "DATABASE_URL", None) or getattr(module, "SQLALCHEMY_DATABASE_URI", None)
+        elif config_path.suffix in [".yaml", ".yml"]:
+            with open(config_path) as f:
+                config = yaml.safe_load(f)
+                return config.get("database", {}).get("url") or config.get("database_url")
+        elif config_path.suffix == ".toml":
+            import tomllib
+            with open(config_path, "rb") as f:
+                config = tomllib.load(f)
+                return config.get("database", {}).get("url") or config.get("database_url")
+        
+        return None
+
+    @staticmethod
+    def load_database_url(config_path: Optional[Path] = None) -> str:
         """Auto-detect database URL from multiple sources"""
-        load_dotenv()
+        # Try explicit config path first
+        if config_path:
+            db_url = ConfigLoader._try_explicit_config(config_path)
+            if db_url:
+                return ConfigLoader._normalize_database_url(db_url)
+        
+        # Find and load .env file
+        env_file = ConfigLoader._find_env_file()
+        if env_file:
+            load_dotenv(env_file)
+        else:
+            load_dotenv()
 
         sources = [
             ("DATABASE_URL environment variable", ConfigLoader._try_env),
@@ -27,7 +95,7 @@ class ConfigLoader:
         for source_name, source_func in sources:
             db_url = source_func()
             if db_url:
-                return db_url
+                return ConfigLoader._normalize_database_url(db_url)
 
         raise ValueError(
             "DATABASE_URL not found. Please set it in:\n"

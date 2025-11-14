@@ -12,8 +12,12 @@ class MigratorConfig(BaseModel):
     base_import_path: Optional[str] = None
 
     @classmethod
-    def load(cls, migrations_dir: Optional[Path] = None) -> "MigratorConfig":
+    def load(
+        cls, 
+        migrations_dir: Optional[Path] = None,
+        config_path: Optional[Path] = None
+    ) -> "MigratorConfig":
         """Auto-detect config from multiple sources"""
-        db_url = ConfigLoader.load_database_url()
+        db_url = ConfigLoader.load_database_url(config_path)
 
         return cls(database_url=db_url, migrations_dir=migrations_dir or Path("migrations"))

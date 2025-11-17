@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2025-11-17
+
+### Fixed
+- Automatic Python path handling in migration environment
+- History status calculation showing correct applied/pending status
+- Migration commands no longer require manual PYTHONPATH setup
+
+### Improved
+- Better migration status tracking after downgrade and stamp operations
+- Enhanced env.py template with automatic path resolution
+
 ## [0.3.0] - 2025-11-14
 
 ### Added

@@ -233,8 +233,8 @@ def history():
         table.add_column("Status", style="green")
 
         for migration in migrations:
-            status = "✅ applied" if migration["revision"] == current else "⏳ pending"
-            table.add_row(migration["revision"][:12], migration["message"], status)
+            status_icon = "✅ applied" if migration["status"] == "applied" else "⏳ pending"
+            table.add_row(migration["revision"][:12], migration["message"], status_icon)
 
         console.print(table)
 

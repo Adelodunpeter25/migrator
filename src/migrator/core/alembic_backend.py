@@ -66,6 +66,7 @@ class AlembicBackend(MigrationBackend):
 script_location = {directory}
 prepend_sys_path = .
 version_path_separator = os
+sqlalchemy.url = {self.config.database_url}
 
 [loggers]
 keys = root,sqlalchemy,alembic
@@ -128,20 +129,35 @@ datefmt = %H:%M:%S
         command.downgrade(self.alembic_cfg, revision)
 
     def history(self) -> List[dict]:
-        """Get migration history"""
+        """Get migration history with correct status"""
         script_dir = ScriptDirectory.from_config(self.alembic_cfg)
+        current_rev = self.current()
         revisions = []
-
-        for revision in script_dir.walk_revisions():
+        
+        # Get all revisions in chronological order
+        all_revisions = list(reversed(list(script_dir.walk_revisions())))
+        
+        # Determine which revisions are applied
+        applied_revisions = set()
+        if current_rev:
+            # Find current revision and mark all up to it as applied
+            for i, revision in enumerate(all_revisions):
+                applied_revisions.add(revision.revision)
+                if revision.revision == current_rev:
+                    break
+        
+        for revision in all_revisions:
+            status = "applied" if revision.revision in applied_revisions else "pending"
             revisions.append(
                 {
                     "revision": revision.revision,
                     "message": revision.doc or "No message",
                     "down_revision": revision.down_revision,
+                    "status": status,
                 }
             )
 
-        return list(reversed(revisions))
+        return revisions
 
     def current(self) -> Optional[str]:
         """Get current revision"""
